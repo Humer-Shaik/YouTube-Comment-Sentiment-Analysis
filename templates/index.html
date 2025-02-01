@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comment Sentiment Analyzer</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: url('https://img.freepik.com/premium-vector/template-comments-leave-comment-video-reply-comment-background_87494-32.jpg?w=1060') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            height: 100vh;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 1);
+            width: 90%;
+            max-width: 700px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        
+        h2 {
+            text-align: left;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        input[type='text'] {
+            width: 75%;
+            padding: 15px;
+            border: none;
+            border-radius: 30px;
+            font-size: 18px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.3); 
+            color: #000;
+            text-align: center;
+            outline: none;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease-in-out;
+        }
+
+        input[type='text']::placeholder {
+            color: rgba(0, 0, 0, 0.6);
+            font-size: 16px;
+        }
+
+        input[type='text']:focus {
+            background: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+        }
+
+        button {
+            background: #007BFF;
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 30px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease-in-out;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            width: 30%;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
+
+        .comments-container {
+            max-height: 300px; 
+            overflow-y: auto; 
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.9); 
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .comment {
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 5px;
+            font-size: 14px;
+            text-align: left;
+            transition: transform 0.2s;
+        }
+
+        .comment:hover {
+            transform: scale(1.02);
+        }
+
+        .red {
+            background-color: #ffebee;
+            border-left: 5px solid #d32f2f;
+            color: #c62828;
+        }
+
+        .green {
+            background-color: #e8f5e9;
+            border-left: 5px solid #388e3c;
+            color: #2e7d32;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                width: 95%;
+            }
+
+            input[type='text'] {
+                width: 100%;
+            }
+
+            .comments-container {
+                max-height: 250px; 
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Comment Sentiment Analyzer</h1>
+        <form method="post">
+            <input type="text" name="youtube_url" placeholder="Enter YouTube Video URL" required>
+            <button type="submit">Analyze</button>
+        </form> 
+        <div class="comments-container">
+            
+            {% if error %}
+                <p class="error">{{ error }}</p>
+            {% endif %}
+            
+            {% if comments %}
+               <h2>Analyzed Comments:</h2>
+                {% for comment in comments %}
+                    <div class="comment {{ comment.color }}">{{ comment.text }}</div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
