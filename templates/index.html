@@ -1,170 +1,377 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Comment Sentiment Analyzer</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background: url('https://img.freepik.com/premium-vector/template-comments-leave-comment-video-reply-comment-background_87494-32.jpg?w=1060') no-repeat center center fixed;
-            background-size: cover;
-            margin: 0;
-            height: 100vh;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Comment Sentiment Analyzer</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: url('https://img.freepik.com/free-photo/particle-lines-futuristic-gradient-background_53876-104053.jpg?t=st=1739526318~exp=1739529918~hmac=9c343fc80006627ea98fa824ba10915021c971a5214e16558d8d3701d1176539&w=2000')
+        no-repeat center center fixed;
+      background-size: cover;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
 
-        .container {
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 1);
-            width: 90%;
-            max-width: 700px;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+    .container {
+      background: #ffffff;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 600px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-        h1 {
-            color: #333;
-            font-size: 24px;
-            margin-bottom: 15px;
-        }
-        
-        h2 {
-            text-align: left;
-        }
+    h1 {
+      color: #333;
+      font-size: 32px;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
 
-        form {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-        }
+    h2 {
+      text-align: left;
+      margin-top: 20px;
+      color: #333;
+      font-weight: bold;
+    }
 
-        input[type='text'] {
-            width: 75%;
-            padding: 15px;
-            border: none;
-            border-radius: 30px;
-            font-size: 18px;
-            margin-bottom: 10px;
-            background: rgba(255, 255, 255, 0.3); 
-            color: #000;
-            text-align: center;
-            outline: none;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-            transition: all 0.3s ease-in-out;
-        }
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
 
-        input[type='text']::placeholder {
-            color: rgba(0, 0, 0, 0.6);
-            font-size: 16px;
-        }
+    input[type="text"] {
+      width: 80%;
+      padding: 15px;
+      border: 2px solid #007bff;
+      border-radius: 30px;
+      font-size: 18px;
+      margin-bottom: 20px;
+      background: rgba(0, 0, 0, 0.05);
+      color: #333;
+      text-align: center;
+      outline: none;
+      transition: border-color 0.3s ease-in-out;
+    }
 
-        input[type='text']:focus {
-            background: rgba(255, 255, 255, 0.5);
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-        }
+    input[type="text"]::placeholder {
+      color: rgba(0, 0, 0, 0.5);
+    }
 
-        button {
-            background: #007BFF;
-            color: white;
-            border: none;
-            padding: 12px 18px;
-            border-radius: 30px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background 0.3s ease-in-out;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            width: 30%;
-        }
+    input[type="text"]:focus {
+      border-color: #0056b3;
+    }
 
-        button:hover {
-            background: #0056b3;
-        }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 30px;
+      font-size: 18px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      width: 50%;
+      transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
+    }
 
-        .error {
-            color: red;
-            margin-top: 10px;
-        }
+    button:hover {
+      background: #0056b3;
+      transform: translateY(-2px);
+      box-shadow: 0 0 20px rgba(0, 123, 255, 0.5);
+    }
 
-        .comments-container {
-            max-height: 300px; 
-            overflow-y: auto; 
-            width: 100%;
-            padding: 10px;
-            border-radius: 5px;
-            background: rgba(255, 255, 255, 0.9); 
-            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-        }
+    /* Download Button Styles */
+    .download-btn {
+      display: inline-block;
+      background: #28a745;
+      color: #fff;
+      padding: 10px 15px;
+      border-radius: 30px;
+      text-decoration: none;
+      margin: 5px;
+      transition: background 0.3s, transform 0.2s;
+    }
+    .download-btn:hover {
+      background: #218838;
+      transform: translateY(-2px);
+    }
 
-        .comment {
-            padding: 12px;
-            margin: 8px 0;
-            border-radius: 5px;
-            font-size: 14px;
-            text-align: left;
-            transition: transform 0.2s;
-        }
+    /* Comments Container with a fixed max-height so that only about 20 comments are visible at a time */
+    .comments-container {
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      background: rgba(240, 240, 240, 0.9);
+      box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+      margin-top: 20px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
 
-        .comment:hover {
-            transform: scale(1.02);
-        }
+    .comment {
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 10px;
+      font-size: 14px;
+      text-align: left;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
 
-        .red {
-            background-color: #ffebee;
-            border-left: 5px solid #d32f2f;
-            color: #c62828;
-        }
+    .comment:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
 
-        .green {
-            background-color: #e8f5e9;
-            border-left: 5px solid #388e3c;
-            color: #2e7d32;
-        }
+    .red {
+      background-color: rgba(255, 0, 0, 0.2);
+      border-left: 5px solid #d32f2f;
+      color: #c62828;
+    }
 
-        @media (max-width: 480px) {
-            .container {
-                width: 95%;
-            }
+    .green {
+      background-color: rgba(0, 255, 0, 0.2);
+      border-left: 5px solid #388e3c;
+      color: #2e7d32;
+    }
 
-            input[type='text'] {
-                width: 100%;
-            }
+    /* Chart and Summary Box Styles */
+    .chart-summary-box {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 20px;
+      width: 100%;
+      padding: 20px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #f0f0f0, #ffffff);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
 
-            .comments-container {
-                max-height: 250px; 
-            }
-        }
-    </style>
+    .chart-box {
+      flex: 1;
+      text-align: center;
+    }
+
+    .chart-box canvas {
+      max-width: 150px;
+      max-height: 150px;
+    }
+
+    .summary-box {
+      flex: 1;
+      text-align: left;
+      padding-left: 20px;
+    }
+
+    .summary-box h3 {
+      margin: 0 0 10px;
+      font-size: 24px;
+      color: #333;
+      border-bottom: 2px solid #007bff;
+      display: inline-block;
+      padding-bottom: 5px;
+    }
+
+    .summary-box p {
+      margin: 5px 0;
+      font-size: 16px;
+      color: #555;
+    }
+
+    /* Top Comments Section Styles */
+    .top-comments {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    .top-comments .column {
+      width: 48%;
+      background: rgba(240, 240, 240, 0.9);
+      padding: 10px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .top-comments .column h3 {
+      margin-top: 0;
+      text-align: center;
+      color: #333;
+    }
+
+    .top-comments .column .comment {
+      margin: 10px 0;
+    }
+
+    /* Overall Summary Styles */
+    .overall-summary {
+      margin-top: 20px;
+      text-align: left;
+      background: rgba(240, 240, 240, 0.9);
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+    .overall-summary h2 {
+      margin-top: 0;
+      color: #333;
+    }
+    .overall-summary p {
+      font-size: 16px;
+      color: #555;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        width: 95%;
+      }
+      input[type="text"] {
+        width: 100%;
+      }
+      button {
+        width: 80%;
+      }
+      .comments-container {
+        max-height: 250px;
+      }
+      .chart-summary-box {
+        flex-direction: column;
+      }
+      .summary-box {
+        padding-left: 0;
+        margin-top: 10px;
+      }
+      .top-comments {
+        flex-direction: column;
+      }
+      .top-comments .column {
+        width: 100%;
+        margin-bottom: 10px;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Comment Sentiment Analyzer</h1>
-        <form method="post">
-            <input type="text" name="youtube_url" placeholder="Enter YouTube Video URL" required>
-            <button type="submit">Analyze</button>
-        </form> 
-        <div class="comments-container">
-            
-            {% if error %}
-                <p class="error">{{ error }}</p>
-            {% endif %}
-            
-            {% if comments %}
-               <h2>Analyzed Comments:</h2>
-                {% for comment in comments %}
-                    <div class="comment {{ comment.color }}">{{ comment.text }}</div>
-                {% endfor %}
-            {% endif %}
+  <div class="container">
+    <h1>Comment Sentiment Analyzer</h1>
+    <form method="post">
+      <input type="text" name="youtube_url" placeholder="Enter YouTube Video URL" required />
+      <button type="submit">Analyze</button>
+    </form>
+
+    {% if error %}
+      <p class="error">{{ error }}</p>
+    {% endif %}
+
+    {% if comments %}
+      <!-- Comments Container -->
+      <div class="comments-container">
+        <h2>Analyzed Comments:</h2>
+        {% for comment in comments %}
+          <div class="comment {{ comment.color }}">{{ comment.text }}</div>
+        {% endfor %}
+      </div>
+
+      <!-- Chart and Summary Box -->
+      <div class="chart-summary-box">
+        <div class="chart-box">
+          <canvas id="smallPieChart" width="150" height="150"></canvas>
         </div>
-    </div>
+        <div class="summary-box">
+          <h3>Sentiment Summary</h3>
+          <p><strong>Positive:</strong> {{ positive_count }}</p>
+          <p><strong>Negative:</strong> {{ negative_count }}</p>
+        </div>
+      </div>
+
+      <!-- Top Comments Summary -->
+      <div class="top-comments">
+        <div class="column">
+          <h3>Top Positive Comments</h3>
+          {% if summary_positive %}
+            {% for comment in summary_positive %}
+              <div class="comment">{{ comment }}</div>
+            {% endfor %}
+          {% else %}
+            <p>No positive comments found.</p>
+          {% endif %}
+        </div>
+        <div class="column">
+          <h3>Top Negative Comments</h3>
+          {% if summary_negative %}
+            {% for comment in summary_negative %}
+              <div class="comment">{{ comment }}</div>
+            {% endfor %}
+          {% else %}
+            <p>No negative comments found.</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Overall Summary Section -->
+      {% if overall_summary %}
+      <div class="overall-summary">
+        <h2>Overall Summary</h2>
+        <p>{{ overall_summary }}</p>
+      </div>
+      {% endif %}
+
+      <!-- Download Buttons -->
+      <div style="margin-top: 20px;">
+        <a href="/download?youtube_url={{ youtube_url }}&format=csv" class="download-btn">Download CSV</a>
+        <a href="/download?youtube_url={{ youtube_url }}&format=pdf" class="download-btn">Download PDF</a>
+      </div>
+    {% endif %}
+  </div>
+
+  {% if comments %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      // Create the small pie chart for the Chart-Summary Box
+      var ctxSmall = document.getElementById('smallPieChart').getContext('2d');
+      var smallPieChart = new Chart(ctxSmall, {
+        type: 'pie',
+        data: {
+          labels: ['Positive', 'Negative'],
+          datasets: [{
+            data: [{{ positive_count }}, {{ negative_count }}],
+            backgroundColor: [
+              'rgba(56, 142, 60, 0.6)',
+              'rgba(211, 47, 47, 0.6)'
+            ],
+            borderColor: [
+              'rgba(56, 142, 60, 1)',
+              'rgba(211, 47, 47, 1)'
+            ],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            }
+          }
+        }
+      });
+    </script>
+  {% endif %}
 </body>
 </html>
