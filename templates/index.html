@@ -3,375 +3,476 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Comment Sentiment Analyzer</title>
+  <title>YouTube Comment Sentiment Analyzer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --primary: #2563eb;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --warning: #eab308;
+      --neutral: #4b5563;
+    }
     body {
-      font-family: 'Arial', sans-serif;
-      background: url('https://img.freepik.com/free-photo/particle-lines-futuristic-gradient-background_53876-104053.jpg?t=st=1739526318~exp=1739529918~hmac=9c343fc80006627ea98fa824ba10915021c971a5214e16558d8d3701d1176539&w=2000')
-        no-repeat center center fixed;
-      background-size: cover;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #f8fafc, #e2e8f0);
       margin: 0;
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      padding: 2rem;
     }
-
+    /* Loading Overlay with CSS Spinner */
+    #loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.8);
+      z-index: 1000;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .spinner {
+      border: 8px solid #f3f3f3;
+      border-top: 8px solid var(--primary);
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1.5s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .loading-text {
+      margin-top: 1rem;
+      font-size: 1rem;
+      color: var(--neutral);
+    }
     .container {
-      background: #ffffff;
-      padding: 40px;
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-      width: 90%;
-      max-width: 600px;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 2.5rem;
+      border-radius: 1.5rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 800px;
+      margin: 2rem;
     }
-
     h1 {
-      color: #333;
-      font-size: 32px;
-      margin-bottom: 20px;
-      font-weight: 600;
-    }
-
-    h2 {
-      text-align: left;
-      margin-top: 20px;
-      color: #333;
-      font-weight: bold;
-    }
-
-    form {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 100%;
-    }
-
-    input[type="text"] {
-      width: 80%;
-      padding: 15px;
-      border: 2px solid #007bff;
-      border-radius: 30px;
-      font-size: 18px;
-      margin-bottom: 20px;
-      background: rgba(0, 0, 0, 0.05);
-      color: #333;
+      color: #1e293b;
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
       text-align: center;
-      outline: none;
-      transition: border-color 0.3s ease-in-out;
     }
-
-    input[type="text"]::placeholder {
-      color: rgba(0, 0, 0, 0.5);
-    }
-
-    input[type="text"]:focus {
-      border-color: #0056b3;
-    }
-
-    button {
-      background: #007bff;
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 30px;
-      font-size: 18px;
-      cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-      width: 50%;
-      transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
-    }
-
-    button:hover {
-      background: #0056b3;
-      transform: translateY(-2px);
-      box-shadow: 0 0 20px rgba(0, 123, 255, 0.5);
-    }
-
-    /* Download Button Styles */
-    .download-btn {
-      display: inline-block;
-      background: #28a745;
-      color: #fff;
-      padding: 10px 15px;
-      border-radius: 30px;
-      text-decoration: none;
-      margin: 5px;
-      transition: background 0.3s, transform 0.2s;
-    }
-    .download-btn:hover {
-      background: #218838;
-      transform: translateY(-2px);
-    }
-
-    /* Comments Container with a fixed max-height so that only about 20 comments are visible at a time */
-    .comments-container {
+    .input-group {
       width: 100%;
-      padding: 10px;
-      border-radius: 10px;
-      background: rgba(240, 240, 240, 0.9);
-      box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
-      margin-top: 20px;
+      max-width: 600px;
+      margin: 0 auto 2rem;
+      position: relative;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 1rem 1.5rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 0.75rem;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: #fff;
+    }
+    input[type="text"]:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    button {
+      background: var(--primary);
+      color: white;
+      padding: 0.875rem 2rem;
+      border-radius: 0.75rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+    }
+    /* Video Embed Thumbnail Styles */
+    .video-embed {
+      margin-top: 2rem;
+      text-align: center;
+    }
+    .video-embed img {
+      width: 100%;
+      max-width: 560px;
+      border-radius: 0.75rem;
+      cursor: pointer;
+    }
+    /* Comments Container */
+    .comments-container {
+      background: #fff;
+      border-radius: 1rem;
+      border: 1px solid #e2e8f0;
+      margin-top: 2rem;
       max-height: 400px;
       overflow-y: auto;
     }
-
     .comment {
-      padding: 12px;
-      margin: 8px 0;
-      border-radius: 10px;
-      font-size: 14px;
-      text-align: left;
-      transition: transform 0.2s, box-shadow 0.2s;
+      padding: 1rem;
+      margin: 0.5rem;
+      border-radius: 0.75rem;
+      border-left: 4px solid;
+      background: #fff;
+      transition: transform 0.2s ease;
     }
-
     .comment:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      transform: translateX(4px);
     }
-
-    .red {
-      background-color: rgba(255, 0, 0, 0.2);
-      border-left: 5px solid #d32f2f;
-      color: #c62828;
-    }
-
-    .green {
-      background-color: rgba(0, 255, 0, 0.2);
-      border-left: 5px solid #388e3c;
-      color: #2e7d32;
-    }
-
-    /* Chart and Summary Box Styles */
+    .green { border-color: var(--success); background: #f0fdf4; }
+    .red { border-color: var(--danger); background: #fef2f2; }
+    .yellow { border-color: var(--warning); background: #fefce8; }
+    /* Chart & Sentiment Distribution */
     .chart-summary-box {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 20px;
-      width: 100%;
-      padding: 20px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, #f0f0f0, #ffffff);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-top: 2rem;
     }
-
     .chart-box {
-      flex: 1;
-      text-align: center;
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: 1rem;
+      border: 1px solid #e2e8f0;
     }
-
-    .chart-box canvas {
-      max-width: 150px;
-      max-height: 150px;
-    }
-
     .summary-box {
-      flex: 1;
-      text-align: left;
-      padding-left: 20px;
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: 1rem;
+      border: 1px solid #e2e8f0;
     }
-
     .summary-box h3 {
-      margin: 0 0 10px;
-      font-size: 24px;
-      color: #333;
-      border-bottom: 2px solid #007bff;
-      display: inline-block;
-      padding-bottom: 5px;
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: #1e293b;
     }
-
-    .summary-box p {
-      margin: 5px 0;
-      font-size: 16px;
-      color: #555;
-    }
-
-    /* Top Comments Section Styles */
-    .top-comments {
-      display: flex;
-      justify-content: space-between;
-      width: 100%;
-      margin-top: 20px;
-    }
-
-    .top-comments .column {
-      width: 48%;
-      background: rgba(240, 240, 240, 0.9);
-      padding: 10px;
-      border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    .top-comments .column h3 {
-      margin-top: 0;
-      text-align: center;
-      color: #333;
-    }
-
-    .top-comments .column .comment {
-      margin: 10px 0;
-    }
-
-    /* Overall Summary Styles */
+    /* Overall Summary */
     .overall-summary {
-      margin-top: 20px;
-      text-align: left;
-      background: rgba(240, 240, 240, 0.9);
-      padding: 15px;
-      border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      margin-top: 2rem;
+      text-align: center;
+      font-size: 1rem;
+      color: #1e293b;
     }
-    .overall-summary h2 {
-      margin-top: 0;
-      color: #333;
+    /* Top Comments (Interactive Cards) */
+    .top-comments-container {
+      display: flex;
+      gap: 2rem;
+      margin-top: 2rem;
     }
-    .overall-summary p {
-      font-size: 16px;
-      color: #555;
-      line-height: 1.5;
+    .top-comments {
+      flex: 1;
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: 1rem;
+      border: 1px solid #e2e8f0;
     }
-
-    @media (max-width: 480px) {
+    .top-comments h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: #1e293b;
+    }
+    .top-comments ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    .top-comments li {
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #e2e8f0;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.3s ease;
+    }
+    .top-comments li:hover {
+      background: #f0f9ff;
+      transform: scale(1.02);
+    }
+    /* Combined Comment Summary & Insights Accordion */
+    .combined-summary {
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: 1rem;
+      border: 1px solid #e2e8f0;
+      margin-top: 2rem;
+    }
+    .combined-summary h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #1e293b;
+      cursor: pointer;
+      position: relative;
+    }
+    .combined-summary h3::after {
+      content: '▼';
+      position: absolute;
+      right: 0;
+      font-size: 1rem;
+      transition: transform 0.3s ease;
+    }
+    .combined-summary.collapsed h3::after {
+      transform: rotate(-90deg);
+    }
+    .combined-summary p {
+      margin: 0;
+      transition: max-height 0.5s ease;
+      overflow: hidden;
+    }
+    /* Download Buttons */
+    .download-buttons {
+      display: flex;
+      justify-content: center;
+      margin-top: 2rem;
+    }
+    .download-btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.75rem;
+      font-weight: 500;
+      color: white;
+      background: var(--primary);
+      text-decoration: none;
+    }
+    @media (max-width: 768px) {
       .container {
-        width: 95%;
-      }
-      input[type="text"] {
-        width: 100%;
-      }
-      button {
-        width: 80%;
-      }
-      .comments-container {
-        max-height: 250px;
+        padding: 1.5rem;
+        margin: 1rem;
       }
       .chart-summary-box {
+        grid-template-columns: 1fr;
+      }
+      .comments-container {
+        max-height: 300px;
+      }
+      .top-comments-container {
         flex-direction: column;
-      }
-      .summary-box {
-        padding-left: 0;
-        margin-top: 10px;
-      }
-      .top-comments {
-        flex-direction: column;
-      }
-      .top-comments .column {
-        width: 100%;
-        margin-bottom: 10px;
       }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Comment Sentiment Analyzer</h1>
-    <form method="post">
-      <input type="text" name="youtube_url" placeholder="Enter YouTube Video URL" required />
-      <button type="submit">Analyze</button>
+  <!-- Loading Overlay with CSS Spinner -->
+  <div id="loading">
+    <div class="spinner"></div>
+    <div class="loading-text">Analyzing Comments...</div>
+  </div>
+
+  <div class="container" id="main-content">
+    <h1>YouTube Comment Sentiment Analysis</h1>
+    
+    <form method="post" id="analyze-form">
+      <div class="input-group">
+        <input type="text" name="youtube_url" 
+               placeholder="Paste YouTube video URL here..." 
+               required
+               pattern="^(https?://)?(www\\.)?(youtube\\.com/watch\\?v=|youtu\\.be/)[\\w-]{11}(&.*)?$">
+      </div>
+      <div class="input-group">
+        <button type="submit">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" style="width: 1.25rem; height: 1.25rem;">
+            <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v6a1 1 0 11-2 0V4H5v11h8a1 1 0 110 2H4a1 1 0 01-1-1V3z" clip-rule="evenodd" />
+            <path fill-rule="evenodd" d="M7 9a1 1 0 011-1h5a1 1 0 011 1v5a1 1 0 01-1 1H8a1 1 0 01-1-1V9z" clip-rule="evenodd" />
+          </svg>
+          Analyze Comments
+        </button>
+      </div>
     </form>
 
-    {% if error %}
-      <p class="error">{{ error }}</p>
+    {% if youtube_url %}
+      {# Extract the video ID using inline Jinja logic #}
+      {% if 'v=' in youtube_url %}
+        {% set video_id = youtube_url.split('v=')[1].split('&')[0] %}
+      {% elif 'youtu.be/' in youtube_url %}
+        {% set video_id = youtube_url.split('youtu.be/')[1].split('?')[0] %}
+      {% else %}
+        {% set video_id = '' %}
+      {% endif %}
+      <div class="video-embed">
+        <img src="https://img.youtube.com/vi/{{ video_id }}/hqdefault.jpg" alt="Video Thumbnail" />
+      </div>
     {% endif %}
 
     {% if comments %}
-      <!-- Comments Container -->
+      <!-- Comments Container ("Analysis Results") -->
       <div class="comments-container">
-        <h2>Analyzed Comments:</h2>
+        <h2 style="padding: 1rem; color: #1e293b; font-size: 1.25rem; font-weight: 600;">Analysis Results</h2>
         {% for comment in comments %}
-          <div class="comment {{ comment.color }}">{{ comment.text }}</div>
+          <div class="comment {% if comment.category == 'positive' %}green{% elif comment.category == 'negative' %}red{% else %}yellow{% endif %}">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <span class="tag" style="font-weight: 500; text-transform: capitalize;">
+                {{ comment.category }}
+              </span>
+              <span style="font-size: 0.875rem; color: #64748b;">
+                {{ "%.1f"|format(comment.confidence * 100) }}%
+              </span>
+            </div>
+            <div style="color: #334155; line-height: 1.5;">
+              {{ comment.text }}
+            </div>
+          </div>
         {% endfor %}
       </div>
 
-      <!-- Chart and Summary Box -->
+      <!-- Sentiment Distribution (Pie Chart & Sentiment Summary) -->
       <div class="chart-summary-box">
         <div class="chart-box">
-          <canvas id="smallPieChart" width="150" height="150"></canvas>
+          <canvas id="sentimentChart"></canvas>
         </div>
         <div class="summary-box">
-          <h3>Sentiment Summary</h3>
-          <p><strong>Positive:</strong> {{ positive_count }}</p>
-          <p><strong>Negative:</strong> {{ negative_count }}</p>
+          <h3>Sentiment Distribution</h3>
+          <div style="display: grid; gap: 0.75rem;">
+            {% for category in ["positive", "negative", "neutral", "suggestions/feedback", "spam/promotional"] %}
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; border-radius: 0.5rem; background: #f8fafc;">
+                <span>{{ category | capitalize }}</span>
+                <span style="font-weight: 600;">{{ category_counts[category] or 0 }}</span>
+              </div>
+            {% endfor %}
+          </div>
         </div>
       </div>
 
-      <!-- Top Comments Summary -->
-      <div class="top-comments">
-        <div class="column">
-          <h3>Top Positive Comments</h3>
-          {% if summary_positive %}
-            {% for comment in summary_positive %}
-              <div class="comment">{{ comment }}</div>
-            {% endfor %}
-          {% else %}
-            <p>No positive comments found.</p>
-          {% endif %}
-        </div>
-        <div class="column">
-          <h3>Top Negative Comments</h3>
-          {% if summary_negative %}
-            {% for comment in summary_negative %}
-              <div class="comment">{{ comment }}</div>
-            {% endfor %}
-          {% else %}
-            <p>No negative comments found.</p>
-          {% endif %}
-        </div>
-      </div>
-
-      <!-- Overall Summary Section -->
+      <!-- Overall Summary -->
       {% if overall_summary %}
       <div class="overall-summary">
-        <h2>Overall Summary</h2>
-        <p>{{ overall_summary }}</p>
+        <strong>Overall Summary:</strong> {{ overall_summary }}
       </div>
       {% endif %}
 
-      <!-- Download Buttons -->
-      <div style="margin-top: 20px;">
-        <a href="/download?youtube_url={{ youtube_url }}&format=csv" class="download-btn">Download CSV</a>
-        <a href="/download?youtube_url={{ youtube_url }}&format=pdf" class="download-btn">Download PDF</a>
+      <!-- Top Positive and Top Negative Comments (Side-by-Side Interactive Cards) -->
+      <div class="top-comments-container">
+        <div class="top-comments">
+          <h3>Top Positive Comments</h3>
+          <ul>
+            {% for comment in top_positive %}
+              <li class="interactive-comment">{{ comment.text }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        <div class="top-comments">
+          <h3>Top Negative Comments</h3>
+          <ul>
+            {% for comment in top_negative %}
+              <li class="interactive-comment">{{ comment.text }}</li>
+            {% endfor %}
+          </ul>
+        </div>
       </div>
+
+      <!-- Combined Comment Summary & Insights Accordion -->
+      <div class="combined-summary" id="summary-accordion">
+        <h3 id="summary-toggle">Comment Summary & Insights</h3>
+        <p id="summary-content">{{ comment_summary }}</p>
+      </div>
+
+      <!-- Download CSV Button -->
+      <div class="download-buttons">
+        <a href="/download?youtube_url={{ youtube_url }}" class="download-btn">
+          Download CSV
+        </a>
+      </div>
+      
+      <!-- Disclaimer -->
+      <p style="color: #6b7280; font-size: 0.875rem; text-align: center; margin-top: 1rem;">
+        The classified comments may not be accurate; proceed with caution.
+      </p>
     {% endif %}
   </div>
 
   {% if comments %}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-      // Create the small pie chart for the Chart-Summary Box
-      var ctxSmall = document.getElementById('smallPieChart').getContext('2d');
-      var smallPieChart = new Chart(ctxSmall, {
-        type: 'pie',
+      // Sentiment Doughnut Chart
+      const ctx = document.getElementById('sentimentChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'doughnut',
         data: {
-          labels: ['Positive', 'Negative'],
+          labels: ['Positive', 'Negative', 'Neutral', 'Suggestions', 'Spam'],
           datasets: [{
-            data: [{{ positive_count }}, {{ negative_count }}],
+            data: {{ category_counts.values() | list }},
             backgroundColor: [
-              'rgba(56, 142, 60, 0.6)',
-              'rgba(211, 47, 47, 0.6)'
+              '#16a34a30', // Positive
+              '#dc262630', // Negative
+              '#eab30830', // Neutral
+              '#2563eb30', // Suggestions/Feedback
+              '#b0b0b0'    // Spam (gray)
             ],
             borderColor: [
-              'rgba(56, 142, 60, 1)',
-              'rgba(211, 47, 47, 1)'
+              '#16a34a',
+              '#dc2626',
+              '#eab308',
+              '#2563eb',
+              '#b0b0b0'
             ],
-            borderWidth: 1
+            borderWidth: 2,
+            hoverOffset: 8
           }]
         },
         options: {
-          responsive: true,
-          maintainAspectRatio: false,
+          cutout: '60%',
           plugins: {
             legend: {
-              display: false
+              position: 'right',
+              labels: {
+                usePointStyle: true,
+                padding: 16
+              }
             }
           }
         }
       });
+
+      // Interactive Top Comments: Toggle a simple highlight on click
+      const interactiveComments = document.querySelectorAll('.interactive-comment');
+      interactiveComments.forEach(item => {
+        item.addEventListener('click', function() {
+          this.classList.toggle('expanded');
+        });
+      });
+
+      // Combined Summary Accordion
+      const summaryToggle = document.getElementById('summary-toggle');
+      const summaryContent = document.getElementById('summary-content');
+      summaryToggle.addEventListener('click', function() {
+        const parent = document.getElementById('summary-accordion');
+        parent.classList.toggle('collapsed');
+        if (parent.classList.contains('collapsed')) {
+          summaryContent.style.maxHeight = '0';
+        } else {
+          summaryContent.style.maxHeight = summaryContent.scrollHeight + 'px';
+        }
+      });
+      
+      // On window load, if summary is not collapsed, set its max-height to scrollHeight
+      window.addEventListener('load', function(){
+        const parent = document.getElementById('summary-accordion');
+        if (!parent.classList.contains('collapsed')) {
+          summaryContent.style.maxHeight = summaryContent.scrollHeight + 'px';
+        }
+      });
     </script>
   {% endif %}
+
+  <script>
+    // Show loading overlay on form submit
+    document.getElementById('analyze-form').addEventListener('submit', function() {
+      document.getElementById('loading').style.display = 'flex';
+    });
+  </script>
 </body>
 </html>

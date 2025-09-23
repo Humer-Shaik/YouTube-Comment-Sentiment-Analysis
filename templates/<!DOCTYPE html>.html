@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Processing Task Status</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    .spinner {
+      margin: 20px auto;
+      width: 50px;
+      height: 50px;
+      border: 5px solid #ccc;
+      border-top-color: #007bff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <h1>Processing Your Video...</h1>
+  <div class="spinner"></div>
+  <p>Your task ID is: <strong>{{ task_id }}</strong></p>
+  <p>Please wait while we process your video. This page will refresh automatically when your analysis is complete.</p>
+  <script>
+    function pollStatus() {
+      fetch('/status/{{ task_id }}')
+        .then(response => response.json())
+        .then(data => {
+          if (data.state === 'SUCCESS') {
+            // Redirect back to index, passing the YouTube URL to show results.
+            window.location.href = "/?youtube_url=" + encodeURIComponent(data.result.youtube_url);
+          } else if (data.state === 'FAILURE') {
+            document.body.innerHTML = "<h1>Task Failed</h1><p>" + data.status + "</p>";
+          } else {
+            setTimeout(pollStatus, 2000);
+          }
+        })
+        .catch(err => {
+          console.error("Error polling status:", err);
+          setTimeout(pollStatus, 2000);
+        });
+    }
+    pollStatus();
+  </script>
+</body>
+</html>
