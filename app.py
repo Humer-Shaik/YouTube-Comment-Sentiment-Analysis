@@ -20,7 +20,7 @@ from flask_compress import Compress
 # ----------------------- Gemini API Integration -----------------------
 import google.generativeai as genai
 # Replace with your actual Gemini API key
-GENAI_API_KEY = "AIzaSyBh0KNS5fl8e117Ygm33HPmBCsNTpdP8wI"
+GENAI_API_KEY = -
 genai.configure(api_key=GENAI_API_KEY)
 
 # ----------------------- App Setup -----------------------
@@ -218,7 +218,7 @@ def index():
         
         # Fetch YouTube comments using the provided API key.
         # Replace with your own YouTube Data API key
-        api_key = "AIzaSyDSxFQfAW7W2HNsV4W7DfE49ocZEjqGdA4"
+        api_key = -
         comments = fetch_youtube_comments(video_id, api_key)
         # Instead of checking for 200 comments, we perform analysis on however many are available.
         if not comments:
